@@ -28,6 +28,8 @@ For building this Docker image, the following will do:
 docker build . -t devops-cop-container-demo
 ```
 
+For added benefit, `export DOCKER_BUILDKIT=1` before the build to use [buildkit, the new build backend](https://github.com/moby/buildkit).
+
 For installing pre-commit hooks, run:
 ```
 pre-commit install
@@ -47,3 +49,13 @@ As CICD good practices,
   - and scan for vulnerabilities with [Trivy](https://github.com/homoluctus/gitrivy/).
 
 Enabling [Docker Content Trust](https://docs.docker.com/engine/security/trust/content_trust/) is normally recommended, but as mentioned in [this open issue](https://github.com/moby/moby/issues/25852) it does not work with locally built images.
+
+
+### Misc
+
+Always clean up after yourself:
+
+```
+docker system prune -a
+```
+(_Note: be mindful about running this on production systems, though._)
