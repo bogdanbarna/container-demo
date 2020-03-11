@@ -3,7 +3,7 @@
 # and install them in the second image without installing the compilers.
 
 ### Base
-FROM python:3.7.6-stretch as base
+FROM python:3.7.7-stretch as base
 LABEL maintainer="IDK <idk@nope.biz>"
 
 COPY requirements/prod-requirements.txt /tmp/
