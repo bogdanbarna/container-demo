@@ -1,12 +1,28 @@
 #!/usr/bin/env bash
 
-set -v
+set -x
 set -e
 
+usage() {
+  echo "Usage: $0 [-t <IMAGE_TAG>]" 1>&2;
+  exit 1;
+}
 
+while getopts ":t:" option; do
+    case "${option}" in
+        t)
+            IMAGE_TAG=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
-# Exit if no $DOCKER_IMAGE variable is present
-if [[ -z "$DOCKER_IMAGE" ]]; then
+shift $((OPTIND-1))
+
+# Exit if no $IMAGE_TAG variable is present
+if [[ -z "$IMAGE_TAG" ]]; then
 	exit 1
 fi
 
@@ -28,6 +44,6 @@ fi
 # Ignore CIS-DI-0001 	Create a user for the container
 # Ignore CIS-DI-0005 	Enable Content trust for Docker
 # Ignore DKL-DI-0006 	Avoid latest tag
-"${DOCKLE}" --ignore CIS-DI-0001 --ignore CIS-DI-0005 --ignore DKL-DI-0006 --exit-code 1 "${DOCKER_IMAGE}"
+"${DOCKLE}" --ignore CIS-DI-0001 --ignore CIS-DI-0005 --ignore DKL-DI-0006 --exit-code 1 "${IMAGE_TAG}"
 
 exit 0

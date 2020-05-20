@@ -5,6 +5,7 @@
 ### Base
 FROM python:3.7.6-stretch as base
 LABEL maintainer="IDK <idk@nope.biz>"
+ENV DEBIAN_FRONTEND=noninteractive
 
 COPY requirements/prod-requirements.txt /tmp/
 RUN \
@@ -26,18 +27,23 @@ COPY requirements/test-requirements.txt /tmp/
 RUN pip --no-cache-dir install -r /tmp/test-requirements.txt
 
 RUN \
-  pylint --disable=R,C,W /app/hello.py && \
-  bandit -v -r app && \
+  pylint --disable=R,C,W /app/*.py && \
+  #bandit -v -r -n 3 -lll app && \
   radon mi -s app && \
   radon cc -s app
 
 ### Release
-FROM gcr.io/distroless/python3:debug as release
+#FROM gcr.io/distroless/python3:debug as release
+FROM python:3.7.6-stretch as release
 COPY --from=base /app /app
 COPY --from=base /usr/local/lib/python3.7/site-packages /usr/local/lib/python3.7/site-packages
 ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages
+ENV FLASK_APP=u_up.py
+ENV FLASK_ENV=development
 
 WORKDIR /app
 USER 1001
 
-CMD [ "hello.py" ]
+EXPOSE 5000
+
+CMD ["python", "-m", "flask", "run"]

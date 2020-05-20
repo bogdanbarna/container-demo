@@ -1,13 +1,31 @@
 #!/usr/bin/env bash
 
-set -v
+set -x
 set -e
 
+usage() {
+  echo "Usage: $0 [-t <IMAGE_TAG>]" 1>&2;
+  exit 1;
+}
 
-# Exit if no $DOCKER_IMAGE variable is present
-if [[ -z "$DOCKER_IMAGE" ]]; then
+while getopts ":t:" option; do
+    case "${option}" in
+        t)
+            IMAGE_TAG=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+# Exit if no $IMAGE_TAG variable is present
+if [[ -z "$IMAGE_TAG" ]]; then
 	exit 1
 fi
+
 
 export TRIVY_TIMEOUT_SEC=360s
 
@@ -27,7 +45,7 @@ else
   chmod 700 "${TRIVY}"
 fi
 
-$TRIVY --debug --clear-cache --ignore-unfixed --exit-code 0 --severity HIGH --no-progress --auto-refresh "$DOCKER_IMAGE"
-$TRIVY --debug --clear-cache --ignore-unfixed --exit-code 1 --severity CRITICAL --no-progress --auto-refresh "$DOCKER_IMAGE"
+$TRIVY --debug --clear-cache --ignore-unfixed --exit-code 0 --severity HIGH --no-progress --auto-refresh "$IMAGE_TAG"
+$TRIVY --debug --clear-cache --ignore-unfixed --exit-code 1 --severity CRITICAL --no-progress --auto-refresh "$IMAGE_TAG"
 
 exit 0

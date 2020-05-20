@@ -4,7 +4,7 @@ name: Docker Image CI
 on: [push]
 
 env:
-  DOCKER_IMAGE: devops-cop-container-demo
+  IMAGE_TAG: devops-cop-container-demo
 
 jobs:
   build:
@@ -17,15 +17,10 @@ jobs:
         uses: brpaz/hadolint-action@v1.0.2
 
       - name: Build the Docker image
-        run: docker build . -t $DOCKER_IMAGE:$GITHUB_SHA
+        run: docker build . -t $IMAGE_TAG
 
       - name: Lint Docker image with Dockle
-        run: bash scripts/dockle_wrapper.sh
+        run: bash scripts/dockle_wrapper.sh -t $IMAGE_TAG
 
       - name: Scan Docker Image for vulnerabilities with Trivy
-        run: bash scripts/trivy_wrapper.sh || echo 'see https://github.com/aquasecurity/trivy/issues/198' # yamllint disable-line
-        #        uses: homoluctus/gitrivy@v1
-        #        with:
-        #          image: $DOCKER_IMAGE:$GITHUB_SHA
-        #          severity: CRITICAL
-        #          ignore_unfixed: true
+        run: bash scripts/trivy_wrapper.sh -t $IMAGE_TAG

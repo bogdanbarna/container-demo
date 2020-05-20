@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -v
 set -e
 
 
@@ -18,4 +17,4 @@ else
   git ls-files --exclude='Dockerfile*' --ignored | xargs --max-lines=1 "${HADOLINT}"
 fi
 
-exit 0
+echo "All good!" && exit 0
